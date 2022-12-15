@@ -38,9 +38,11 @@ model Note {
 }
 
 model Post {
-  slug  String
-  title String
+  articleSlug  String @id
+  authorSlug String
+  articleTitle String
   markdown  String
+  author String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

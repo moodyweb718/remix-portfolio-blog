@@ -1,7 +1,5 @@
 import { Link } from "@remix-run/react";
-
 import { useOptionalUser } from "~/utils";
-import BlogRoll from "./blogroll";
 import Footer from "./footer";
 import NavBar from "./navbar";
 

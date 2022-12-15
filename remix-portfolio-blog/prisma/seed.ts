@@ -40,6 +40,38 @@ async function seed() {
     },
   });
 
+  const posts = [
+    { 
+      articleSlug:'article-3',
+      authorSlug:'ridley-davies',
+      articleTitle: 'Article #3',
+      author: 'Ridley Davies',
+      markdown:`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.`, 
+    },
+    { 
+      articleSlug:'article-2',
+      authorSlug:'ridley-davies',
+      articleTitle: 'Article #2',
+      author: 'Ridley Davies',
+      markdown:`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.`,
+    },
+    {
+      articleSlug:'article-1',
+      authorSlug:'ridley-davies',
+      articleTitle: 'Article #1',
+      author: 'Ridley Davies',
+      markdown:`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.`,
+    }
+  ];
+
+  for (const post of posts) {
+    await prisma.post.upsert({
+      where: { articleSlug: post.articleSlug },
+      update: post,
+      create: post,
+    });
+  }
+
   console.log(`Database has been seeded. 🌱`);
 }
 
