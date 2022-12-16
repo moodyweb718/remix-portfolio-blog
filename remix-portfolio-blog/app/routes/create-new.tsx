@@ -1,5 +1,5 @@
-import { Form, Link } from "@remix-run/react";
-import { ActionFunction, redirect, Response } from "@remix-run/node";
+import { Form, Link, useActionData } from "@remix-run/react";
+import { ActionFunction, json, redirect, Response } from "@remix-run/node";
 import { title } from "process";
 
 import { useOptionalUser } from "~/utils";
@@ -16,12 +16,26 @@ export const action: ActionFunction = async ({request}) => {
   const author = formData.get('author');
   const authorSlug = formData.get('authorSlug');
 
+  const errors = {
+    articleTitle: articleTitle ? null : 'Article Title is required',
+    articleSlug: articleSlug ? null : 'Article Slug is required',
+    markdown: markdown ? null : 'Markdown is required',
+    author: author ? null : 'Author Name is required',
+    authorSlug: authorSlug ? null : 'Author Slug is required',
+  };
+
+  const hasErrors = Object.values(errors).some(errorMessage => errorMessage);
+  if (hasErrors) {
+    return json(errors);
+  }
+
   await createPost({articleTitle, articleSlug, markdown, author, authorSlug});
 
   return redirect('/');
 };
 
 export default function Index() {
+  const errors = useActionData();
   const user = useOptionalUser();
 
   const blogTitles = [
@@ -46,14 +60,19 @@ export default function Index() {
             <div className="column">
                 
                 <div className="field">
-                  <label className="label">Article Title</label>
+                  <label className="label">Article Title: {errors?.articleTitle ? (
+                    <em className="has-text-danger">{errors.articleTitle}</em>
+                  ) : null}</label>
+
                   <div className="control">
                     <input className="input" type="text" id="articleTitle" name="articleTitle" placeholder="Text input" />
                   </div>
                 </div>
 
                 <div className="field">
-                  <label className="label" id="articleSlug">Article Slug</label>
+                  <label className="label" id="articleSlug">Article Slug: {errors?.articleSlug ? (
+                    <em className="has-text-danger">{errors.articleSlug}</em>
+                  ) : null}</label>
                   <div className="control">
                     <input className="input" type="text" id="articleSlug" name="articleSlug" placeholder="Text input" />
                   </div>
@@ -62,21 +81,27 @@ export default function Index() {
                 {/* TO DO: REGISTER THAT A USER IS SIGNED IN, THEN AUTOSIGN IT FOR THAT AUTHOR & THAT AUTHOR IS TIED TO A URL */}
 
                 <div className="field">
-                  <label className="label">Author</label>
+                  <label className="label">Author: {errors?.author ? (
+                    <em className="has-text-danger">{errors.author}</em>
+                  ) : null}</label>
                   <div className="control">
                     <input className="input" type="text" id="author" name="author" placeholder="Text input" />
                   </div>
                 </div>
 
                 <div className="field">
-                  <label className="label">Author Slug</label>
+                  <label className="label">Author Slug: {errors?.authorSlug ? (
+                    <em className="has-text-danger">{errors.authorSlug}</em>
+                  ) : null}</label>
                   <div className="control">
                     <input className="input" type="text" id="authorSlug" name="authorSlug" placeholder="Text input" />
                   </div>
                 </div>
 
                 <div className="field">
-                  <label className="label" id="markdown">Body of Article</label>
+                  <label className="label" id="markdown">Body of Article: {errors?.markdown ? (
+                    <em className="has-text-danger">{errors.markdown}</em>
+                  ) : null}</label>
                   <div className="control">
                     <textarea className="textarea" id="markdown" name="markdown" placeholder="Textarea"></textarea>
                   </div>

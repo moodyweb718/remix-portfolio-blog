@@ -44,6 +44,7 @@ export default function Index() {
                 
               <div className="columns is-multiline">
 
+                  {/* TO DO: CHANGE THE DIRECTION SO MOST RECENT POST POSTS AT THE TOP & LAST POST AT THE BOTTOM */}
                   {posts.map((post) => (
                     <div className="column is-one-third">
                       <div className="card">
