@@ -1,4 +1,4 @@
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useTransition } from "@remix-run/react";
 import { ActionFunction, json, redirect, Response } from "@remix-run/node";
 import { title } from "process";
 
@@ -7,6 +7,15 @@ import BlogRoll from "./blogroll";
 import Footer from "./footer";
 import NavBar from "./navbar";
 import { createPost } from "~/models/post.server";
+import invariant from "tiny-invariant";
+
+type ActionData = {
+  articleTitle: null | string,
+  articleSlug: null | string,
+  markdown: null | string,
+  author: null | string,
+  authorSlug: null | string,
+} | undefined
 
 export const action: ActionFunction = async ({request}) => {
   const formData = await request.formData();
@@ -16,7 +25,7 @@ export const action: ActionFunction = async ({request}) => {
   const author = formData.get('author');
   const authorSlug = formData.get('authorSlug');
 
-  const errors = {
+  const errors: ActionData = {
     articleTitle: articleTitle ? null : 'Article Title is required',
     articleSlug: articleSlug ? null : 'Article Slug is required',
     markdown: markdown ? null : 'Markdown is required',
@@ -26,8 +35,14 @@ export const action: ActionFunction = async ({request}) => {
 
   const hasErrors = Object.values(errors).some(errorMessage => errorMessage);
   if (hasErrors) {
-    return json(errors);
+    return json<ActionData>(errors);
   }
+
+  invariant(typeof articleTitle === 'string', 'Title must be a string');
+  invariant(typeof articleSlug === 'string', 'Slug must be a string');
+  invariant(typeof markdown === 'string', 'Markdown must be a string');
+  invariant(typeof author === 'string', 'Author must be a string');
+  invariant(typeof authorSlug === 'string', 'Author Slug must be a string');
 
   await createPost({articleTitle, articleSlug, markdown, author, authorSlug});
 
@@ -35,8 +50,10 @@ export const action: ActionFunction = async ({request}) => {
 };
 
 export default function Index() {
-  const errors = useActionData();
+  const errors = useActionData() as ActionData;
   const user = useOptionalUser();
+  const transition = useTransition();
+  const isCreating = Boolean(transition.submission);
 
   const blogTitles = [
     'Title #3',
@@ -109,7 +126,7 @@ export default function Index() {
 
                 <div className="field is-grouped">
                   <div className="control">
-                    <button className="button is-link">Publish</button>
+                    <button className="button is-link" disabled={isCreating}>{isCreating ? 'Publishing...' : 'Publish'}</button>
                   </div>
                   <div className="control">
                     <button className="button is-link is-light">Cancel</button>

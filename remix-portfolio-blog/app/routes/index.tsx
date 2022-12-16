@@ -64,7 +64,7 @@ export default function Index() {
                           </div>
                           <div className="media-content">
                             <div key={post.articleSlug} className="title is-4">
-                              <Link to={post.articleSlug}>
+                              <Link to={post.articleSlug} prefetch="intent">
                                 {post.articleTitle}
                               </Link>
                             </div>
