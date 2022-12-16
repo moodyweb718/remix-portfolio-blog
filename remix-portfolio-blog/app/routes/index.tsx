@@ -42,10 +42,10 @@ export default function Index() {
                 Read our new articles
               </h2>
                 
-              <div className="columns">
+              <div className="columns is-multiline">
 
                   {posts.map((post) => (
-                    <div className="column">
+                    <div className="column is-one-third">
                       <div className="card">
                         <div className="card-image">
                           <figure className="image is-4by3">
